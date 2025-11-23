@@ -1,0 +1,98 @@
+---
+# Cisco Nexus VPC Simulation (EVE-NG Lab) YAML Configuration
+# This configuration is suited for EVE-NG Cisco Nexus vPC lab setups
+# It defines device details, topology, and VPC/port channel status checks
+
+lab_info:
+  platform: "EVE-NG"
+  description: "Cisco Nexus vPC Simulation for Data Center Topology"
+  version: "1.0"
+
+nexus_devices:
+  leaf_1:
+    hostname: "NexusLeaf1"
+    ip: "10.10.20.11"
+    model: "Nexus 9300v"
+    username: "admin"
+    password: "cisco"
+  leaf_2:
+    hostname: "NexusLeaf2"
+    ip: "10.10.20.12"
+    model: "Nexus 9300v"
+    username: "admin"
+    password: "cisco"
+  spine_1:
+    hostname: "NexusSpine1"
+    ip: "10.10.20.21"
+    model: "Nexus 9300v"
+    username: "admin"
+    password: "cisco"
+
+vpc_topology:
+  type: "classic vPC"
+  members:
+    - leaf_1
+    - leaf_2
+  peer_link:
+    interfaces:
+      leaf_1: ["Ethernet1/10", "Ethernet1/11"]
+      leaf_2: ["Ethernet1/10", "Ethernet1/11"]
+    description: "vPC Peer-Link"
+  keepalive:
+    leaf_1: "mgmt0"
+    leaf_2: "mgmt0"
+    description: "vPC Keepalive Link"
+  vpc_domain_id: 10
+  role_priority:
+    leaf_1: 100
+    leaf_2: 110
+  allowed_vlan: "2-4094"
+  peer_switch_enabled: false
+
+checks:
+  vpc_status:
+    enabled: true
+    commands:
+      - command: "show vpc"
+        description: "Overall vPC domain status"
+      - command: "show vpc brief"
+        description: "Brief view of vPC roles and ports"
+      - command: "show vpc consistency-parameters"
+        description: "vPC consistency checks and parameters"
+      - command: "show vpc peer-keepalive"
+        description: "vPC peer keepalive status"
+  port_channel_status:
+    enabled: true
+    commands:
+      - command: "show port-channel summary"
+        description: "Port-channel summary across the device"
+      - command: "show interface port-channel"
+        description: "Port-channel interface details"
+      - command: "show interface port-channel counters"
+        description: "Port-channel traffic and error counters"
+  vpc_peer_link:
+    enabled: true
+    commands:
+      - command: "show interface Ethernet1/10"
+        description: "Peer-link interface status on leaf_1 and leaf_2"
+      - command: "show interface Ethernet1/11"
+        description: "Peer-link interface status on leaf_1 and leaf_2"
+  vpc_keepalive:
+    enabled: true
+    commands:
+      - command: "show interface mgmt0"
+        description: "Keepalive interface status"
+      - command: "show vpc peer-keepalive"
+        description: "Keepalive message status"
+
+output:
+  format: "json"
+  save_to_file: true
+  file_path: "/var/log/nexus_vpc_lab/"
+  retention_days: 15
+
+monitoring:
+  interval_seconds: 300
+  enable_alerts: false
+  enable_logging: true
+  log_level: "INFO"
