@@ -1,0 +1,207 @@
+---
+# Cisco 9300 Switch Health Monitoring Configuration
+# This YAML configuration defines commands to fetch various status information
+# from Cisco Catalyst 9300 series switches
+
+switch_info:
+  model: "Cisco Catalyst 9300"
+  description: "Health monitoring configuration for power, stack, fans, and CPU"
+  version: "1.0"
+
+# Connection Parameters
+connection:
+  device_type: "cisco_ios"
+  timeout: 30
+  global_delay_factor: 2
+
+# Health Check Commands
+health_checks:
+  
+  # Power Supply Status
+  power_supply:
+    enabled: true
+    commands:
+      - command: "show environment power all"
+        description: "Display all power supply status and details"
+        parse: true
+      - command: "show power inline"
+        description: "Display PoE power status"
+        parse: true
+      - command: "show environment status"
+        description: "Display overall environmental status including power"
+        parse: true
+    thresholds:
+      warning_watts: 100
+      critical_watts: 50
+    output_format: "json"
+  
+  # Stack Status
+  stack:
+    enabled: true
+    commands:
+      - command: "show switch"
+        description: "Display stack member status and role"
+        parse: true
+      - command: "show switch detail"
+        description: "Display detailed stack information"
+        parse: true
+      - command: "show switch stack-ring speed"
+        description: "Display stack ring speed"
+        parse: false
+      - command: "show platform stack manager all"
+        description: "Display stack manager details"
+        parse: false
+    monitoring:
+      check_stack_member_state: true
+      check_stack_priority: true
+      alert_on_member_down: true
+    output_format: "json"
+  
+  # Stack Ports Status
+  stack_ports:
+    enabled: true
+    commands:
+      - command: "show switch stack-ports"
+        description: "Display stack port status"
+        parse: true
+      - command: "show switch stack-ports summary"
+        description: "Display stack ports summary"
+        parse: true
+      - command: "show platform stack manager stack-ports"
+        description: "Display detailed stack port information"
+        parse: false
+    monitoring:
+      check_link_status: true
+      check_bandwidth: true
+      alert_on_link_down: true
+    output_format: "json"
+  
+  # Fan Status
+  fan:
+    enabled: true
+    commands:
+      - command: "show environment fan"
+        description: "Display fan status"
+        parse: true
+      - command: "show environment status"
+        description: "Display environmental status including fans"
+        parse: true
+      - command: "show environment all"
+        description: "Display all environmental information"
+        parse: false
+    thresholds:
+      rpm_warning: 5000
+      rpm_critical: 3000
+    monitoring:
+      check_fan_speed: true
+      check_fan_state: true
+      alert_on_fan_failure: true
+    output_format: "json"
+  
+  # CPU Status
+  cpu:
+    enabled: true
+    commands:
+      - command: "show processes cpu sorted"
+        description: "Display CPU utilization sorted by usage"
+        parse: true
+      - command: "show processes cpu history"
+        description: "Display CPU utilization history"
+        parse: true
+      - command: "show processes cpu platform sorted"
+        description: "Display platform CPU processes"
+        parse: false
+      - command: "show platform software status control-processor brief"
+        description: "Display control processor status"
+        parse: false
+    thresholds:
+      warning_percent: 80
+      critical_percent: 95
+    monitoring:
+      check_5sec_avg: true
+      check_1min_avg: true
+      check_5min_avg: true
+      alert_on_high_cpu: true
+    output_format: "json"
+  
+  # Memory Status (Additional)
+  memory:
+    enabled: true
+    commands:
+      - command: "show processes memory sorted"
+        description: "Display memory utilization sorted"
+        parse: true
+      - command: "show platform software status control-processor brief"
+        description: "Display control processor memory"
+        parse: false
+    thresholds:
+      warning_percent: 85
+      critical_percent: 95
+    output_format: "json"
+  
+  # Temperature Status (Additional)
+  temperature:
+    enabled: true
+    commands:
+      - command: "show environment temperature"
+        description: "Display temperature sensors"
+        parse: true
+      - command: "show environment status"
+        description: "Display environmental status"
+        parse: true
+    thresholds:
+      warning_celsius: 65
+      critical_celsius: 75
+    output_format: "json"
+
+# Monitoring Schedule
+monitoring:
+  interval_seconds: 300  # Check every 5 minutes
+  enable_alerts: true
+  enable_logging: true
+  log_level: "INFO"
+  
+  # Alert Configuration
+  alerts:
+    email:
+      enabled: false
+      recipients:
+        - "netops@example.com"
+    syslog:
+      enabled: true
+      server: "syslog.example.com"
+      port: 514
+    snmp:
+      enabled: false
+      trap_server: "snmp.example.com"
+
+# Output Configuration
+output:
+  format: "json"  # Options: json, yaml, text
+  save_to_file: true
+  file_path: "/var/log/cisco_health/"
+  filename_pattern: "cisco9300_health_{timestamp}.json"
+  retention_days: 30
+  
+  # Database storage (optional)
+  database:
+    enabled: false
+    type: "influxdb"  # Options: influxdb, prometheus, elasticsearch
+    host: "localhost"
+    port: 8086
+    database_name: "network_monitoring"
+
+# Parsing Rules
+parsing:
+  use_textfsm: true
+  use_genie: true
+  custom_parsers:
+    power_supply: "parsers/power_supply_parser.py"
+    stack_status: "parsers/stack_parser.py"
+
+# Error Handling
+error_handling:
+  retry_attempts: 3
+  retry_delay_seconds: 5
+  continue_on_error: true
+  log_errors: true
