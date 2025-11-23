@@ -2,7 +2,7 @@
 
 A comprehensive YAML-based configuration and Python automation tool for monitoring Cisco Catalyst 9300 series switches. This repository provides automated health checks for power supply, stack status, stack ports, fans, CPU, memory, and temperature.
 
-## 🚀 Features
+## Features
 
 - **Power Supply Monitoring**: Track power supply status, PoE power, and environmental conditions
 - **Stack Status Monitoring**: Monitor stack member states, roles, and priorities
@@ -15,7 +15,7 @@ A comprehensive YAML-based configuration and Python automation tool for monitori
 - **Multiple Output Formats**: JSON, YAML, and text output support
 - **Alert Integration**: Email, Syslog, and SNMP trap support
 
-## 📋 Prerequisites
+## Prerequisites
 
 ### Required Python Packages
 
@@ -31,7 +31,7 @@ pip install netmiko pyyaml textfsm pyats genie
 - SSH access to Cisco switches (port 22)
 - Enable privilege level 15 or appropriate TACACS/RADIUS permissions
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 cisco-switch-monitoring/
@@ -41,7 +41,7 @@ cisco-switch-monitoring/
 └── output/                         # Results directory (auto-created)
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### YAML Configuration File
 
@@ -100,7 +100,7 @@ The `cisco_9300_health_check.yaml` file contains all monitoring configurations:
 - `show environment temperature`
 - `show environment status`
 
-## 🔧 Usage
+## Usage
 
 ### Method 1: Using Environment Variables
 
@@ -151,7 +151,7 @@ monitor.save_results()
 monitor.disconnect()
 ```
 
-## 📊 Output Examples
+## Output Examples
 
 ### JSON Output Format
 
@@ -179,7 +179,7 @@ monitor.disconnect()
 }
 ```
 
-## 🔔 Alert Configuration
+## Alert Configuration
 
 ### Email Alerts
 
@@ -213,7 +213,7 @@ alerts:
     trap_server: "snmp.company.com"
 ```
 
-## 🎯 Threshold Configuration
+## Threshold Configuration
 
 Customize thresholds in the YAML file:
 
@@ -235,7 +235,7 @@ health_checks:
       critical_celsius: 75
 ```
 
-## 🔄 Scheduling with Cron
+## Scheduling with Cron
 
 Add to crontab for automated monitoring:
 
@@ -250,7 +250,7 @@ Add to crontab for automated monitoring:
 0 2 * * * cd /path/to/repo && /usr/bin/python3 cisco_health_monitor.py
 ```
 
-## 📈 Integration Options
+## Integration Options
 
 ### InfluxDB Integration
 
@@ -287,7 +287,7 @@ output:
     database_name: "cisco-monitoring"
 ```
 
-## 🛠️ Customization
+## Customization
 
 ### Adding Custom Commands
 
@@ -318,7 +318,7 @@ parsing:
     my_custom_check: "parsers/my_parser.py"
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -342,7 +342,7 @@ parsing:
    - Disable parsing for specific commands
    - Use raw text output for debugging
 
-## 📝 Best Practices
+## Best Practices
 
 1. **Security**
    - Use environment variables for credentials
@@ -364,29 +364,29 @@ parsing:
    - Review logs regularly
    - Implement trending and reporting
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Cisco Catalyst 9300 Configuration Guide](https://www.cisco.com/c/en/us/support/switches/catalyst-9300-series-switches/products-installation-and-configuration-guides-list.html)
 - [Netmiko Documentation](https://github.com/ktbyers/netmiko)
 - [TextFSM Templates](https://github.com/networktocode/ntc-templates)
 - [Genie Documentation](https://developer.cisco.com/docs/genie-docs/)
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
 
-## 📄 License
+## License
 
 This project is open source and available for use in network automation projects.
 
-## 👤 Author
+## Author
 
 **Mylappan**
 - GitHub: [@mylappaninfra](https://github.com/mylappaninfra)
 - Experience: 12+ years in network domain
 - Specialization: Network Architecture, SD-WAN Technology
 
-## 🔗 Repository
+## Repository
 
 [https://github.com/mylappaninfra/cisco-switch-monitoring](https://github.com/mylappaninfra/cisco-switch-monitoring)
 
